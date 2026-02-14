@@ -221,6 +221,8 @@
  * M306 - MPC autotune. (Requires MPCTEMP)
  * M309 - Set chamber PID parameters P I and D. (Requires PIDTEMPCHAMBER)
  * 
+ * M325 - Control spindle (Requires SPINDLE_FEATURE)
+ * 
  * M327 - опускание зонда до срабатывания
  * M328 - выдвинуть зонд (активировать)
  * M329 - втянуть зонд (деактивировать)
@@ -972,6 +974,9 @@ private:
     static void M309();
     static void M309_report(const bool forReplay=true);
   #endif
+
+  static void M325(); // фрезер
+  static void M322(); // пылесос
   
   #if ENABLED(SELF_MADE_Z_PROBE)
     static void M327(); // проба

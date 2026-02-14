@@ -1483,7 +1483,7 @@ void prepare_line_to_destination() {
       LOOP_NUM_AXES(i) if (TEST(axis_bits, i)) need[n++] = all_axes[i];
       need[n] = '\0';
 
-      char msg[30];
+      char msg[35];
       sprintf_P(msg, GET_EN_TEXT(MSG_HOME_FIRST), need);
       SERIAL_ECHO_START();
       SERIAL_ECHOLN(msg);

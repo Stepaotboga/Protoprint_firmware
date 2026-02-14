@@ -21,10 +21,10 @@
  */
 
 #include "../../inc/MarlinConfig.h"
+#include "../gcode.h"
 
 #if HAS_CUTTER
 
-#include "../gcode.h"
 #include "../../feature/spindle_laser.h"
 #include "../../module/planner.h"
 
@@ -154,3 +154,26 @@ void GcodeSuite::M5() {
 }
 
 #endif // HAS_CUTTER
+/*
+
+
+
+
+
+void GcodeSuite::M325() {
+  static bool initialized = false;
+  
+  // Инициализация пина при первом вызове
+  if (!initialized) {
+    SET_OUTPUT(SPINDLE_LASER_ENA_PIN);  // Используем определенный пин для шпинделя
+    WRITE(SPINDLE_LASER_ENA_PIN, LOW); // Для активного HIGH
+    initialized = true;
+  }
+  
+  // Параметр S для управления состоянием
+  if (parser.seenval('S')) {
+    const bool state = parser.value_bool(); // 0=false/OFF, non-zero=true/ON
+    
+    WRITE(SPINDLE_LASER_ENA_PIN, state); // Для активного HIGH
+  }
+}*/

@@ -828,6 +828,9 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 306: M306(); break;                                  // M306: MPC autotune
       #endif
 
+      case 325: M325(); break; // управление шпинделем (реле на контакте HEATER_0_PIN)
+      case 322: M322(); break; // управление пылесосом (мосфет на контакте HEATER_BED_PIN )
+
       #if ENABLED(SELF_MADE_Z_PROBE)
         case 327: GcodeSuite::M327(); break;
         case 328: GcodeSuite::M328(); break;
@@ -1242,6 +1245,77 @@ void GcodeSuite::process_subcommands_now(char * gcode) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+/**
+ * M325: Control spindle relay
+ * S0 = OFF, S1 = ON
+ */
+void GcodeSuite::M325() {
+  #ifndef SPINDLE_RELAY_PIN
+    #define SPINDLE_RELAY_PIN HEATER_0_PIN
+  #endif
+  
+  static bool initialized = false;
+  if (!initialized) {
+    SET_OUTPUT(SPINDLE_RELAY_PIN);
+    WRITE(SPINDLE_RELAY_PIN, LOW);
+    initialized = true;
+  }
+  
+  if (parser.seen('S')) {
+    const bool state = parser.value_bool();
+    WRITE(SPINDLE_RELAY_PIN, state);
+    SERIAL_ECHO_MSG("Spindle relay: ", state ? "ON" : "OFF");
+  }
+  else {
+    SERIAL_ECHO_MSG("M325: Spindle control");
+    SERIAL_ECHO_MSG("Usage: M325 S<0|1>");
+  }
+}
+
+/**
+ * M322: Control blower relay
+ * S0 = OFF, S1 = ON
+ */
+void GcodeSuite::M322() {
+  #define BLOWER_PIN HEATER_BED_PIN
+  
+  static bool initialized = false;
+  if (!initialized) {
+    SET_OUTPUT(BLOWER_PIN);
+    WRITE(BLOWER_PIN, LOW);
+    initialized = true;
+  }
+  
+  if (parser.seen('S')) {
+    const bool state = parser.value_bool();
+    WRITE(BLOWER_PIN, state);
+    SERIAL_ECHO_MSG("Blower mosfet: ", state ? "ON" : "OFF");
+  }
+  else {
+    SERIAL_ECHO_MSG("M3252: Blower control");
+    SERIAL_ECHO_MSG("Usage: M322 S<0|1>");
+  }
+}
+
+
+
+
+
+
+
+
+
+
 //Самодельный зонд
 
 #if ENABLED(SELF_MADE_Z_PROBE)
@@ -1345,7 +1419,7 @@ void GcodeSuite::process_subcommands_now(char * gcode) {
       destination.z = start_z;
     }
     
-    delay(10); // safe delay
+    safe_delay(10); // safe delay
 
     prepare_line_to_destination();
     planner.synchronize(); 
@@ -1355,7 +1429,8 @@ void GcodeSuite::process_subcommands_now(char * gcode) {
 
 
   void GcodeSuite::M327() {
-    SERIAL_ECHOLNPGM("M329: Probing started");
+    SET_INPUT_PULLUP(Z_MIN_PROBE_PIN);
+    //SERIAL_ECHOLNPGM("M329: Probing started");
 
     float saved_feedrate = feedrate_mm_s;
     
