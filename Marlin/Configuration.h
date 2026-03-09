@@ -1200,14 +1200,14 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 400, 400, 400, 850 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 400, 800, 400, 850 }
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 30, 30, 30, 15 }
+#define DEFAULT_MAX_FEEDRATE          { 30, 10, 30, 15 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -1304,13 +1304,15 @@
 
 //Custom
 #define SPINDLE_LASER_ENA_PIN HEATER_0_PIN
+#define PINS_DEBUGGING
+#define DIRECT_PIN_CONTROL
 
 
 #define SELF_MADE_Z_PROBE
 
 // Настройте пин вручную
 #define Z_MIN_PROBE_PIN PB0 //PB1 для высоты инструмента
-#define PROBE_SOLENOID_PIN PB0
+#define INSTRUMENT_HEIGH_PIN PB1
 //#define PROBE_SPEED 3 // мм/с Скорость опускания
 #define PROBE_SPEED_RETRACT 10 // мм/с Скорость поднятия
 #define PROBE_DIST 10 // мм Дистанция опускания

@@ -1302,7 +1302,7 @@ void GcodeSuite::M322() {
     SERIAL_ECHO_MSG("Blower mosfet: ", state ? "ON" : "OFF");
   }
   else {
-    SERIAL_ECHO_MSG("M3252: Blower control");
+    SERIAL_ECHO_MSG("M322: Blower control");
     SERIAL_ECHO_MSG("Usage: M322 S<0|1>");
   }
 }
@@ -1321,7 +1321,7 @@ void GcodeSuite::M322() {
 #if ENABLED(SELF_MADE_Z_PROBE)
   // функция для второго касания
   #if ENABLED(TWO_ATTEMPS)
-    float second_probe(float measured_z) {
+    float second_probe(float measured_z, int pin) {
       bool probe_triggered = false;
 
       // Поднятие на безопасное расстояние
@@ -1339,7 +1339,7 @@ void GcodeSuite::M322() {
       destination.z = target_second_z;
       prepare_line_to_destination();
       while (true) {
-        if (READ(Z_MIN_PROBE_PIN) == LOW) {
+        if (READ(pin) == LOW) {
           planner.quick_stop();
           planner.clear_block_buffer();
           measured_z = planner.get_axis_position_mm(Z_AXIS);
@@ -1364,7 +1364,7 @@ void GcodeSuite::M322() {
   #endif
 
   // функция первого касания
-  bool first_brobe() {
+  bool first_brobe(int pin) {
     const float start_x = current_position.x;
     const float start_y = current_position.y;
     const float start_z = current_position.z;
@@ -1380,7 +1380,7 @@ void GcodeSuite::M322() {
     prepare_line_to_destination(); // запуск фонового движения зонда
 
     while (true) {
-      if (READ(Z_MIN_PROBE_PIN) == LOW) {
+      if (READ(pin) == LOW) {
         //SERIAL_ECHOLNPGM("trigged");
         planner.quick_stop();
         planner.clear_block_buffer();
@@ -1390,8 +1390,8 @@ void GcodeSuite::M322() {
         probe_triggered = true;
         planner.position.z = measured_z * planner.settings.axis_steps_per_mm[Z_AXIS];
         #if ENABLED(TWO_ATTEMPS)
-          measured_z = second_probe(measured_z);
-          if (measured_z == 11.0) {
+          measured_z = second_probe(measured_z, pin);
+          if (measured_z > 10.0) {
             probe_triggered = false;
           }
         #endif
@@ -1428,65 +1428,45 @@ void GcodeSuite::M322() {
   }
 
 
-  void GcodeSuite::M327() {
-    SET_INPUT_PULLUP(Z_MIN_PROBE_PIN);
+  void GcodeSuite::M327() { //Z_probe
+    SET_INPUT(Z_MIN_PROBE_PIN);
     //SERIAL_ECHOLNPGM("M329: Probing started");
 
     float saved_feedrate = feedrate_mm_s;
     
-    first_brobe();
+    first_brobe(Z_MIN_PROBE_PIN);
  
         
     feedrate_mm_s = saved_feedrate;
   }
 
   void GcodeSuite::M328() {
+    SET_INPUT(Z_MIN_PROBE_PIN);
+    SET_INPUT_PULLUP(INSTRUMENT_HEIGH_PIN);
     if (READ(Z_MIN_PROBE_PIN) == LOW) {
-      SERIAL_ECHO("True");
+      SERIAL_ECHOLNPGM("Probe: LOW");
     }
     else {
-      SERIAL_ECHO("Not");
+      SERIAL_ECHOLNPGM("Probe: HIGH");
+    }
+    if (READ(INSTRUMENT_HEIGH_PIN) == LOW) {
+      SERIAL_ECHOLNPGM("Instrument: LOW");
+    }
+    else {
+      SERIAL_ECHOLNPGM("Instrument: HIGH");
     }
   }
 
   void GcodeSuite::M329() {
-    float start_z = current_position.z;
-    bool triggered = false;
-    float trigger_z = 0;
-    float probe_stop_z = start_z - 10.0;
+    SET_INPUT_PULLUP(INSTRUMENT_HEIGH_PIN);
+    //SERIAL_ECHOLNPGM("M329: Probing started");
 
-    for (float z = current_position.z; z > probe_stop_z; z -= 0.01) { // Шаг 0.01 мм
-      do_blocking_move_to_z(z, PROBE_SPEED);
-      
-      // Проверка датчика (BLTouch обычно LOW при срабатывании)
-      if (READ(Z_MIN_PROBE_PIN) == LOW) {
-        triggered = true;
-        trigger_z = z;
-        break;
-      }
-      
-      // Задержка для стабильности
-      //safe_delay(1);
-    }
-
-    if (triggered) {
-      // Поднимаемся на 1 мм от точки контакта
-      do_blocking_move_to_z(trigger_z + 1, homing_feedrate(Z_AXIS));
-      
-      
-      // Отправляем результат ОТНОСИТЕЛЬНО ИСХОДНОЙ ВЫСОТЫ
-      float delta_z = start_z - trigger_z;
-      
-      SERIAL_ECHOPGM("Z_PROBE_DELTA:");
-      SERIAL_ECHO_F(delta_z, 3);
-      SERIAL_ECHOPGM(" TRIGGER_ABS:");
-      SERIAL_ECHO_F(trigger_z, 3);
-      SERIAL_EOL();
-    } else {
-      // Возвращаемся в исходную точку
-      do_blocking_move_to_z(start_z, homing_feedrate(Z_AXIS));
-      SERIAL_ECHOLNPGM("Z_PROBE_NOT_TRIGGERED");
-    }
+    float saved_feedrate = feedrate_mm_s;
+    
+    first_brobe(INSTRUMENT_HEIGH_PIN);
+ 
+        
+    feedrate_mm_s = saved_feedrate;
   }
 
   
