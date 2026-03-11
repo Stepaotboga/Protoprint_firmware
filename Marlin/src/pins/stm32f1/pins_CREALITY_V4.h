@@ -145,6 +145,29 @@
 #endif
 #define E0_ENABLE_PIN               X_ENABLE_PIN
 
+#if HAS_TMC_UART
+  /**
+   * TMC2209 stepper drivers - Single-wire UART
+   * Все драйверы (X, Y, Z, E0) используют один общий пин для связи.
+   * В этом случае используется программный UART (SoftwareSerial).
+   * Адресация драйверов задается в Configuration_adv.h
+   */
+  #define SW_UART                // Включаем поддержку программного UART
+  
+  #define X_SERIAL_TX_PIN   PC_6
+  #define X_SERIAL_RX_PIN   PC_6
+  #define Y_SERIAL_TX_PIN   PC_6
+  #define Y_SERIAL_RX_PIN   PC_6
+  #define Z_SERIAL_TX_PIN   PC_6
+  #define Z_SERIAL_RX_PIN   PC_6
+  #define E0_SERIAL_TX_PIN  PC_6
+  #define E0_SERIAL_RX_PIN  PC_6
+  
+  // Снижаем скорость для надежности программного UART
+  #define TMC_BAUD_RATE 19200
+
+#endif
+
 //
 // Temperature Sensors
 //
