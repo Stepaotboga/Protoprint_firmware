@@ -186,42 +186,65 @@
 #define DEBUG_03_PIN                        PA14
 
 #if ANY(RET6_12864_LCD, HAS_DWIN_E3V2, IS_DWIN_MARLINUI)
+  #define BOARD_FOR_DISPLAY 1 //           1 for E3 free-runs      0 for crelity v422
+  
+  #if BOARD_FOR_DISPLAY
+    /**     !!!!!!!!CREALITY E3 FREERUNS
+     *    RET6 12864 LCD 
+     *        ------
+     *  PC0  | 1  2 | PB2
+     *  PA2  | 3  4 | PA3
+     *  PB14 | 5  6 | PB13
+     *  PB12 | 7  8 | PB15
+     *   GND | 9 10 | 5V
+     *        ------
+     */
+    #define EXP3_01_PIN PC0
+    #define EXP3_02_PIN PB2
+    #define EXP3_03_PIN PA2
+    #define EXP3_04_PIN PA3
+    #define EXP3_05_PIN PB14
+    #define EXP3_06_PIN PB13
+    #define EXP3_07_PIN PB12
+    #define EXP3_08_PIN PB15
 
-  /**
-   *    RET6 12864 LCD
-   *        ------
-   *  PC6  | 1  2 | PB2
-   *  PB10 | 3  4 | PB11
-   *  PB14   5  6 | PB13
-   *  PB12 | 7  8 | PB15
-   *   GND | 9 10 | 5V
-   *        ------
-   */
-  #ifndef EXP3_01_PIN
-    #define EXP3_01_PIN                     PC6
-  #endif
-  #ifndef EXP3_02_PIN
-    #define EXP3_02_PIN                     PB2
-  #endif
-  #ifndef EXP3_03_PIN
-    #define EXP3_03_PIN                     PB10
-  #endif
-  #ifndef EXP3_04_PIN
-    #define EXP3_04_PIN                     PB11
-  #endif
-  #ifndef EXP3_05_PIN
-    #define EXP3_05_PIN                     PB14
-  #endif
-  #ifndef EXP3_06_PIN
-    #define EXP3_06_PIN                     PB13
-  #endif
-  #ifndef EXP3_07_PIN
-    #define EXP3_07_PIN                     PB12
-  #endif
-  #ifndef EXP3_08_PIN
-    #define EXP3_08_PIN                     PB15
-  #endif
 
+  #else
+    /** on creality standart boar v4.2.2 v4.2.7
+     *    RET6 12864 LCD
+     *        ------
+     *  PC6  | 1  2 | PB2
+     *  PB10 | 3  4 | PB11
+     *  PB14   5  6 | PB13
+     *  PB12 | 7  8 | PB15
+     *   GND | 9 10 | 5V
+     *        ------
+     */
+    #ifndef EXP3_01_PIN
+      #define EXP3_01_PIN                     PC6
+    #endif
+    #ifndef EXP3_02_PIN
+      #define EXP3_02_PIN                     PB2
+    #endif
+    #ifndef EXP3_03_PIN
+      #define EXP3_03_PIN                     PB10
+    #endif
+    #ifndef EXP3_04_PIN
+      #define EXP3_04_PIN                     0x1B //PB11
+    #endif
+    #ifndef EXP3_05_PIN
+      #define EXP3_05_PIN                     PB14
+    #endif
+    #ifndef EXP3_06_PIN
+      #define EXP3_06_PIN                     PB13
+    #endif
+    #ifndef EXP3_07_PIN
+      #define EXP3_07_PIN                     PB12
+    #endif
+    #ifndef EXP3_08_PIN
+      #define EXP3_08_PIN                     PB15
+    #endif
+  #endif
 #elif ANY(VET6_12864_LCD, DWIN_VET6_CREALITY_LCD)
 
   /**
