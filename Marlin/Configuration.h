@@ -1310,6 +1310,7 @@
 
 
 #define SELF_MADE_Z_PROBE
+#define SOL1_PIN PB10
 
 // Настройте пин вручную
 #define Z_MIN_PROBE_PIN PB0 //PB1 для высоты инструмента
@@ -1374,7 +1375,7 @@
  * A Fix-Mounted Probe either doesn't deploy or needs manual deployment.
  *   (e.g., an inductive probe or a nozzle-based probe-switch.)
  */
-#define FIX_MOUNTED_PROBE
+//#define FIX_MOUNTED_PROBE
 
 /**
  * Use the nozzle as the probe, as with a conductive
@@ -1424,7 +1425,8 @@
 #endif
 
 // A probe that is deployed and stowed with a solenoid pin (SOL1_PIN)
-//#define SOLENOID_PROBE
+#define SOLENOID_PROBE
+#define SOL1_PIN_INVERTING true
 
 // A sled-mounted probe like those designed by Charles Bell.
 //#define Z_PROBE_SLED

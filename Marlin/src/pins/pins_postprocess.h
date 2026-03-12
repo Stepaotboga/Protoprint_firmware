@@ -1869,7 +1869,7 @@
   #define USE_WMIN_PLUG
 #endif
 #undef _STOP_IN_USE
-#if !USES_Z_MIN_PROBE_PIN
+#if !USES_Z_MIN_PROBE_PIN && !defined(SELF_MADE_Z_PROBE)
   #undef Z_MIN_PROBE_PIN
   #define Z_MIN_PROBE_PIN    -1
 #endif

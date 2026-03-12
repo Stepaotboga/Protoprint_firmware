@@ -1412,7 +1412,11 @@ void setup() {
   #endif
 
   #if ANY(Z_PROBE_SLED, SOLENOID_PROBE) && HAS_SOLENOID_1
-    OUT_WRITE(SOL1_PIN, LOW); // OFF
+    #if SOL1_PIN_INVERTING
+      OUT_WRITE(SOL1_PIN, HIGH); // ON on setup
+    #else
+      OUT_WRITE(SOL1_PIN, LOW); // OFF
+    #endif
   #endif
 
   #if HAS_HOME
