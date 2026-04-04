@@ -1364,7 +1364,7 @@ void GcodeSuite::M322() {
   #endif
 
   // функция первого касания
-  bool first_brobe(int pin) {
+  bool first_brobe(int pin, int state=LOW) {
     const float start_x = current_position.x;
     const float start_y = current_position.y;
     const float start_z = current_position.z;
@@ -1380,7 +1380,7 @@ void GcodeSuite::M322() {
     prepare_line_to_destination(); // запуск фонового движения зонда
 
     while (true) {
-      if (READ(pin) == LOW) {
+      if (READ(pin) == state) {
         //SERIAL_ECHOLNPGM("trigged");
         planner.quick_stop();
         planner.clear_block_buffer();
@@ -1463,7 +1463,7 @@ void GcodeSuite::M322() {
 
     float saved_feedrate = feedrate_mm_s;
     
-    first_brobe(INSTRUMENT_HEIGH_PIN);
+    first_brobe(INSTRUMENT_HEIGH_PIN, HIGH);
  
         
     feedrate_mm_s = saved_feedrate;
